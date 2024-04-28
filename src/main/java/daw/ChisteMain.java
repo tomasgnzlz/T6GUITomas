@@ -23,9 +23,20 @@ public class ChisteMain {
         String fichero2 = ConexionHTTP.peticionHttpGet(urlBase2);
 
         Joke chiste = (Joke) JsonService.stringToPojo(fichero, Joke.class);
-        System.out.println(chiste);
-        System.out.println("-------------");
+        System.out.println(chiste.toString());
+        
+        System.out.println("\n-----------------------------------------\n");
         ListaChistes lista = (ListaChistes) JsonService.stringToPojo(fichero2, ListaChistes.class);
         lista.getJokes().forEach(System.out::println);
+        
     }
+
+    public static String singlePartJoke(Joke joke) {
+        return joke.getType();
+    }
+
+    public static String twoPartJoke(Joke joke) {
+        return joke.getSetup() + joke.getDelivery();
+    }
+
 }
