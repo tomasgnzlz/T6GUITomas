@@ -11,6 +11,8 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
@@ -116,10 +118,6 @@ public class Panel extends JPanel {
 
     // Método que me devuelve la url Final
     public static String crearURL(JComboBox<String> lang, JComboBox<String> categorias, JComboBox<String> cantidad) {
-//        String tipoPArtes = "single";
-//        if (categorias.getSelectedItem().toString().equals("Programming")) {
-//            tipoPArtes = "twopart";
-//        }
         String cantidadChistes = "&amount=";
         if (Integer.parseInt(cantidad.getSelectedItem().toString()) >= 2) {
             cantidadChistes = cantidadChistes + cantidad.getSelectedItem().toString();
@@ -136,15 +134,30 @@ public class Panel extends JPanel {
 
 // Método que hace la conexion y me devuelve por consola el json con el chiste o los chistes
     public static void chisteConsola(String urlfinal) throws IOException {
+        String chisteDevolver = "";
         String fichero = ConexionHTTP.peticionHttpGet(urlfinal);
-        modelos.Joke chiste =(modelos.Joke) JsonService.stringToPojo(fichero, modelos.Joke.class);
+        modelos.Joke chiste = (modelos.Joke) JsonService.stringToPojo(fichero, modelos.Joke.class);
+
+        if (chiste.getType().equals("twopart")) {
+            System.out.println(chiste.getSetup() + " " + chiste.getDelivery());
+            chisteDevolver = chiste.getSetup() + " " + chiste.getDelivery();
+        } else if (chiste instanceof modelos.Joke) {
+            System.out.println(chiste.getSetup());
+            chisteDevolver = chiste.getSetup();
+        }
         System.out.println(chiste.toString());
+        //return chisteDevolver;
     }
-    
+
     public static void chistesssssConsola(String urlfinal) throws IOException {
         String fichero2 = ConexionHTTP.peticionHttpGet(urlfinal);
         ListaChistes lista = (ListaChistes) JsonService.stringToPojo(fichero2, ListaChistes.class);
-        lista.getJokes().forEach(System.out::println);
+        List<String> listaDevolver = new ArrayList<>();
+        for (int i = 0; i < lista.getJokes().size(); i++) {
+            //System.out.println(lista.getJokes().get(i).getSetup() +" " + lista.getJokes().get(i).getDelivery() );
+            listaDevolver.add(lista.getJokes().get(i).getSetup() + " " + lista.getJokes().get(i).getDelivery());
+        }
+        //return listaDevolver;
     }
-    
+
 }
