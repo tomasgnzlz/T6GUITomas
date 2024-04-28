@@ -37,6 +37,7 @@ public class Panel extends JPanel {
     public static final int ANCHO_PANEL = 600;
     public static final int ALTO_PANEL = 200;
     public static final String URL_BASE = "https://v2.jokeapi.dev/joke/";
+    String chisteFinal = "";
 
     // Atributos del panel
     private JLabel txtLang, txtCat, txtCant;
@@ -90,17 +91,29 @@ public class Panel extends JPanel {
                 if (Integer.parseInt(cantidad.getSelectedItem().toString()) > 1) {
                     try {
                         // Llama al metodo que muestra una lista de chistes
-                        chistesssssConsola(urlfinal);
+                        List<String> listaChistes = new ArrayList<>();
+                        listaChistes = chistesssssConsola(urlfinal);
+                        //listaChistes.forEach(System.out::println);
+                        chisteFinal = deListaAStringUnico(listaChistes);
+                        System.out.println("Chistes: --> "+chisteFinal);
                     } catch (IOException ex) {
-                        Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
+                        //Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("NO HAY CHISTES PARA ESOS PARÁMETROS");
+                        chisteFinal = "";
                     }
                 } else {
                     try {
                         // Llama al metodo que muestra un chiste
-                        chisteConsola(urlfinal);
+                        String chiste = chisteConsola(urlfinal);
+                        System.out.println(chiste);
+                        chisteFinal = chiste;
+                        System.out.println("Chistes: --> "+chisteFinal);
                     } catch (IOException ex) {
-                        Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                        //Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
+                        System.out.println("NO HAY CHISTES PARA ESOS PARÁMETROS");
+                        chisteFinal = "";                    }
+                    
+                            
                 }
             }
         });
@@ -133,7 +146,7 @@ public class Panel extends JPanel {
     }
 
 // Método que hace la conexion y me devuelve por consola el json con el chiste o los chistes
-    public static void chisteConsola(String urlfinal) throws IOException {
+    public static String chisteConsola(String urlfinal) throws IOException {
         String chisteDevolver = "";
         String fichero = ConexionHTTP.peticionHttpGet(urlfinal);
         modelos.Joke chiste = (modelos.Joke) JsonService.stringToPojo(fichero, modelos.Joke.class);
@@ -145,11 +158,11 @@ public class Panel extends JPanel {
             System.out.println(chiste.getSetup());
             chisteDevolver = chiste.getSetup();
         }
-        System.out.println(chiste.toString());
-        //return chisteDevolver;
+        //System.out.println(chiste.toString());
+        return chisteDevolver;
     }
 
-    public static void chistesssssConsola(String urlfinal) throws IOException {
+    public static List<String> chistesssssConsola(String urlfinal) throws IOException {
         String fichero2 = ConexionHTTP.peticionHttpGet(urlfinal);
         ListaChistes lista = (ListaChistes) JsonService.stringToPojo(fichero2, ListaChistes.class);
         List<String> listaDevolver = new ArrayList<>();
@@ -157,7 +170,16 @@ public class Panel extends JPanel {
             //System.out.println(lista.getJokes().get(i).getSetup() +" " + lista.getJokes().get(i).getDelivery() );
             listaDevolver.add(lista.getJokes().get(i).getSetup() + " " + lista.getJokes().get(i).getDelivery());
         }
-        //return listaDevolver;
+        return listaDevolver;
+    }
+    
+    // Método que a partir de una lista de chistes crea un unico String con los chistes uno debajo de otro
+    public static String deListaAStringUnico(List<String> listaStrings) {
+        String chistes = "";
+        for (int i = 0; i < listaStrings.size(); i++) {
+            chistes += (i + 1) + " --> " + listaStrings.get(i) + "\n";
+        }
+        return chistes;
     }
 
 }
