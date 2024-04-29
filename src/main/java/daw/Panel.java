@@ -49,7 +49,7 @@ public class Panel extends JPanel {
         // Establece el layout del panel
         this.setLayout(new FlowLayout());
         // Establece el color del fondo del panel
-        this.setBackground(Color.ORANGE);
+        this.setBackground(Color.magenta);
         // Establece el tamaño del panel
         this.setSize(ANCHO_PANEL, ALTO_PANEL);
         inicializarComponentes();
@@ -57,7 +57,7 @@ public class Panel extends JPanel {
 
     private void inicializarComponentes() {
 //*********************************Lenguaje*************************************
-        String[] lenguajes = {"cs", "de", "es", "fr", "pt"};
+        String[] lenguajes = {"en","cs", "de", "es", "fr", "pt"};
         txtLang = new JLabel("Lenguaje:");
 
         this.add(txtLang);
@@ -80,7 +80,6 @@ public class Panel extends JPanel {
         btnPedir = new JButton("Generar chistes");
         this.add(btnPedir);
         // Comportamiento del botón generar 
-        // Comportamiento del botón generar 
         btnPedir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -95,10 +94,12 @@ public class Panel extends JPanel {
                         listaChistes = chistesssssConsola(urlfinal);
                         //listaChistes.forEach(System.out::println);
                         chisteFinal = deListaAStringUnico(listaChistes);
-                        System.out.println("Chistes: --> "+chisteFinal);
+                        System.out.println("Chistes: --> " + chisteFinal);
+                        JOptionPane.showMessageDialog(null, chisteFinal);
                     } catch (IOException ex) {
                         //Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
                         System.out.println("NO HAY CHISTES PARA ESOS PARÁMETROS");
+                        JOptionPane.showMessageDialog(null, "NO HAY CHISTES PARA ESOS PARÁMETROS");
                         chisteFinal = "";
                     }
                 } else {
@@ -107,13 +108,14 @@ public class Panel extends JPanel {
                         String chiste = chisteConsola(urlfinal);
                         System.out.println(chiste);
                         chisteFinal = chiste;
-                        System.out.println("Chistes: --> "+chisteFinal);
+                        System.out.println("Chistes: --> " + chisteFinal);
+                        JOptionPane.showMessageDialog(null, chisteFinal);
                     } catch (IOException ex) {
                         //Logger.getLogger(Panel.class.getName()).log(Level.SEVERE, null, ex);
                         System.out.println("NO HAY CHISTES PARA ESOS PARÁMETROS");
-                        chisteFinal = "";                    }
-                    
-                            
+                        JOptionPane.showMessageDialog(null, "NO HAY CHISTES PARA ESOS PARÁMETROS");
+                        chisteFinal = "";
+                    }
                 }
             }
         });
@@ -152,13 +154,10 @@ public class Panel extends JPanel {
         modelos.Joke chiste = (modelos.Joke) JsonService.stringToPojo(fichero, modelos.Joke.class);
 
         if (chiste.getType().equals("twopart")) {
-            System.out.println(chiste.getSetup() + " " + chiste.getDelivery());
             chisteDevolver = chiste.getSetup() + " " + chiste.getDelivery();
         } else if (chiste instanceof modelos.Joke) {
-            System.out.println(chiste.getSetup());
             chisteDevolver = chiste.getSetup();
         }
-        //System.out.println(chiste.toString());
         return chisteDevolver;
     }
 
@@ -167,12 +166,16 @@ public class Panel extends JPanel {
         ListaChistes lista = (ListaChistes) JsonService.stringToPojo(fichero2, ListaChistes.class);
         List<String> listaDevolver = new ArrayList<>();
         for (int i = 0; i < lista.getJokes().size(); i++) {
-            //System.out.println(lista.getJokes().get(i).getSetup() +" " + lista.getJokes().get(i).getDelivery() );
-            listaDevolver.add(lista.getJokes().get(i).getSetup() + " " + lista.getJokes().get(i).getDelivery());
+            if (lista.getJokes().get(i).getType().equals("twopart")) {
+                listaDevolver.add(lista.getJokes().get(i).getSetup() + " " + lista.getJokes().get(i).getDelivery());
+            } else {
+                listaDevolver.add(lista.getJokes().get(i).getJoke());
+            }
+
         }
         return listaDevolver;
     }
-    
+
     // Método que a partir de una lista de chistes crea un unico String con los chistes uno debajo de otro
     public static String deListaAStringUnico(List<String> listaStrings) {
         String chistes = "";
